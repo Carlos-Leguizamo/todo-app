@@ -15,9 +15,12 @@ return new class extends Migration
     {
         Schema::create('note_tag', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('note_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tag_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.
