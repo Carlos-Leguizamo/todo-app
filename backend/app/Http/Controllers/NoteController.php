@@ -31,46 +31,29 @@ class NoteController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Validar los datos de entrada al momento de la actualizacion
+        // Validar los datos de entrada
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string|max:50',  // Cada etiqueta debe tener máximo 50 caracteres
             'due_date' => 'nullable|date_format:Y-m-d',
             'image' => 'nullable|string',
         ]);
 
         try {
-            // Crear la nota con los datos proporcionados
+            // Crear la nota
             $note = new Note();
             $note->title = $request->input('title');
             $note->description = $request->input('description');
-            $note->user_id = Auth::id(); // Obtiene el ID del usuario autenticado
+            $note->user_id = Auth::id();
             $note->due_date = $request->input('due_date');
             $note->image = $request->input('image');
             $note->save();
 
-            // Asignar etiquetas (si están presentes)
+            // Asignar etiquetas (opcional)
             if ($request->has('tags')) {
-                $tagIds = [];
-
-                foreach ($request->input('tags') as $tagName) {
-                    // Buscar la etiqueta por nombre
-                    $tag = Tag::where('name', $tagName)->first();
-
-                    if ($tag) {
-                        // Si la etiqueta existe, agregamos su ID
-                        $tagIds[] = $tag->id;
-                    } else {
-                        // Si la etiqueta no existe, la creamos
-                        $newTag = Tag::create(['name' => $tagName]);
-                        $tagIds[] = $newTag->id; // Agregar el nuevo ID a la lista
-                    }
-                }
-
-                // Asociar las etiquetas a la nota
-                $note->tags()->sync($tagIds);
+                // Llama al método en TagController
+                $tagController = new TagController();
+                $tagController->assignTagsToNote($note, $request->input('tags'));
             }
 
             return response()->json($note, 201);
@@ -78,6 +61,7 @@ class NoteController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
 
 
