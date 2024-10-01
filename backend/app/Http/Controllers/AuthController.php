@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -61,5 +62,30 @@ class AuthController extends Controller
     public function user()
     {
         return response()->json(Auth::user());
+    }
+
+    // Validar token
+    public function validateToken(Request $request)
+    {
+        // Validar que se envíe el token
+        $validator = Validator::make($request->all(), [
+            'token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        dd($request->input('token')); // Muestra el token y detiene la ejecución
+
+        // Verificar si el token es válido
+        $user = Auth::guard('api')->user(); // Verifica si el token está asociado a un usuario
+
+
+        if ($user) {
+            return response()->json(['valid' => true, 'user' => $user], 200);
+        } else {
+            return response()->json(['valid' => false], 401);
+        }
     }
 }

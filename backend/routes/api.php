@@ -8,6 +8,7 @@ use App\Http\Controllers\NoteController;
 // Rutas de autenticación
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::post('validate-token', [AuthController::class, 'validateToken']);
 
 // Rutas protegidas por autenticación
 Route::middleware('auth:api')->group(function () {
