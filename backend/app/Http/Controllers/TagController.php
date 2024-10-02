@@ -23,7 +23,7 @@ class TagController extends Controller
             } else {
                 // Si la etiqueta no existe, la creamos
                 $newTag = Tag::create(['name' => $tagName]);
-                $tagIds[] = $newTag->id; // Agregar el nuevo ID a la lista
+                $tagIds[] = $newTag->id;
             }
         }
 

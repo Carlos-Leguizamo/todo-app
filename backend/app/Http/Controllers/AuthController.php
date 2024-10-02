@@ -64,28 +64,16 @@ class AuthController extends Controller
         return response()->json(Auth::user());
     }
 
-    // Validar token
     public function validateToken(Request $request)
     {
-        // Validar que se envíe el token
-        $validator = Validator::make($request->all(), [
-            'token' => 'required|string',
-        ]);
+        // Obtener el usuario autenticado usando el token de la cabecera Authorization
+        $user = Auth::guard('api')->user();
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        dd($request->input('token')); // Muestra el token y detiene la ejecución
-
-        // Verificar si el token es válido
-        $user = Auth::guard('api')->user(); // Verifica si el token está asociado a un usuario
-
-
+        // Verificar si el usuario está autenticado (si el token es válido)
         if ($user) {
             return response()->json(['valid' => true, 'user' => $user], 200);
         } else {
-            return response()->json(['valid' => false], 401);
+            return response()->json(['valid' => false, 'message' => 'Invalid token'], 401);
         }
     }
 }

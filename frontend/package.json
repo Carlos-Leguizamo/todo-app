@@ -13,6 +13,8 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
     "axios": "^1.7.7",
+    "lucide-vue-next": "^0.447.0",
+    "sweetalert2": "^11.14.1",
     "vue": "^3.4.29",
     "vue-router": "^4.4.5",
     "vuex": "^4.1.0"

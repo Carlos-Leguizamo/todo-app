@@ -35,13 +35,13 @@
         </button>
       </form>
 
-      <!-- Mensaje de error -->
-      <p v-if="errorMessage" class="text-red-500 text-sm mt-2 text-center">{{ errorMessage }}</p>
-
       <p class="text-xs text-gray-500 mt-4 text-center">
         ¿No tienes cuenta? <router-link to="/register" class="text-blue-500 hover:underline">Regístrate aquí</router-link>.
       </p>
     </div>
+
+    <!-- Componente de carga -->
+    <Loading v-if="isLoading" />
   </div>
 </template>
 
@@ -49,15 +49,17 @@
 import { useStore } from 'vuex'; // Importa useStore
 import { useRouter } from 'vue-router'; // Importa useRouter
 import { ref } from 'vue';
+import Loading from '@/components/Loading.vue'; // Asegúrate de importar tu componente de carga
+import Swal from 'sweetalert2'; // Importa SweetAlert2
 
 const store = useStore(); // Usa el store de Vuex
 const router = useRouter(); // Usa el router
 const email = ref('');
 const password = ref('');
-const errorMessage = ref(''); // Variable para el mensaje de error
+const isLoading = ref(false); // Estado de carga
 
 const handleSubmit = () => {
-  errorMessage.value = ''; // Resetear el mensaje de error antes de la nueva solicitud
+  isLoading.value = true; // Activar el estado de carga
   console.log('Email:', email.value);
   console.log('Password:', password.value);
 
@@ -69,8 +71,21 @@ const handleSubmit = () => {
     })
     .catch((error) => {
       console.error(error);
-      // Asegúrate de que la acción de login devuelva el mensaje de error adecuado
-      errorMessage.value = error.response?.data?.message || 'Correo o contraseña incorrectos. Inténtalo de nuevo.'; // Actualizar el mensaje de error
+      // Mostrar la alerta de error
+      Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Email o contraseña incorrectos',
+          customClass: {
+            popup: 'bg-white rounded-lg shadow-lg p-4 max-w-xs',
+            title: 'text-xl font-bold text-gray-800',
+            content: 'text-sm text-gray-600',
+            confirmButton: 'bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition duration-200'
+          }
+        });
+    })
+    .finally(() => {
+      isLoading.value = false; // Desactivar el estado de carga después de que finalice la solicitud
     });
 };
 </script>

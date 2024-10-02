@@ -11,13 +11,7 @@ class Note extends Model
     use HasFactory;
 
     // Campos que pueden ser asignados en masa
-    protected $fillable = [
-        'title',
-        'description',
-        'user_id',
-        'due_date',
-        'image',
-    ];
+    protected $fillable = ['title', 'description', 'due_date', 'image'];
 
     // Las fechas que serán tratadas como instancias de Carbon
     protected $dates = ['due_date', 'created_at', 'updated_at'];

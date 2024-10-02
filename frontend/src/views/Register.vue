@@ -66,21 +66,30 @@
         <router-link to="/" class="text-blue-500 hover:underline">Inicia sesión aquí</router-link>.
       </p>
     </div>
+
+    <!-- Componente de Carga -->
+    <Loading v-if="isLoading" />
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from 'vuex';
+import Loading from '@/components/Loading.vue';
+import Swal from 'sweetalert2';
 
 export default {
   name: 'RegisterView',
+  components: {
+    Loading
+  },
   data() {
     return {
       username: '',
       email: '',
       password: '',
-      confirmPassword: ''
-    }
+      confirmPassword: '',
+      isLoading: false // Estado de carga
+    };
   },
   computed: {
     ...mapState(['errorMessage']) // Mapea el estado del error desde Vuex
@@ -88,29 +97,68 @@ export default {
   methods: {
     async handleSubmit() {
       if (this.password !== this.confirmPassword) {
-        this.$store.commit('setError', 'Las contraseñas no coinciden')
-        return
+        // Alerta para contraseñas no coincidentes
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Las contraseñas no coinciden.',
+          customClass: {
+            popup: 'bg-white rounded-lg shadow-lg p-4 max-w-xs',
+            title: 'text-xl font-bold text-gray-800',
+            content: 'text-sm text-gray-600',
+            confirmButton: 'bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition duration-200'
+          }
+        });
+        return;
+      }
+
+      // Validación de longitud de contraseña
+      if (this.password.length < 8) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'La contraseña debe tener al menos 8 caracteres.',
+          customClass: {
+            popup: 'bg-white rounded-lg shadow-lg p-4 max-w-xs',
+            title: 'text-xl font-bold text-gray-800',
+            content: 'text-sm text-gray-600',
+            confirmButton: 'bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition duration-200'
+          }
+        });
+        return;
       }
 
       const userData = {
-        name: this.username, // Cambiado de username a name
+        name: this.username,
         email: this.email,
         password: this.password,
         password_confirmation: this.confirmPassword
-      }
+      };
 
-      // Llama a la acción de registro en Vuex
-      await this.$store.dispatch('register', userData)
+      this.isLoading = true; // Inicia el estado de carga
 
-      // Redirige o maneja el estado después del registro
-      if (!this.errorMessage) {
-        this.$router.push('/') // Cambia la ruta según sea necesario
+      try {
+        // Llama a la acción de registro en Vuex
+        await this.$store.dispatch('register', userData);
+
+        // Espera un momento para mostrar el componente de carga
+        await new Promise((resolve) => setTimeout(resolve, 1500)); // Esperar 1.5 segundos (ajusta según lo que necesites)
+
+        // Redirige o maneja el estado después del registro
+        if (!this.errorMessage) {
+          this.$router.push('notes'); // Cambia 'Home' a 'notes'
+        }
+      } catch (error) {
+        console.error("Error during registration:", error);
+        // Aquí puedes manejar otros posibles errores
+      } finally {
+        this.isLoading = false; // Finaliza el estado de carga
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>
-/* Estilos adicionales si los necesitas */
+/* No se necesitan estilos adicionales, ya que todo está manejado por Tailwind CSS */
 </style>
