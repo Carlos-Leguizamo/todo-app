@@ -207,6 +207,7 @@ import { useStore } from 'vuex'
 
 const store = useStore() // Acceder al store
 const user = computed(() => store.state.user)
+store.dispatch('checkAuthentication')
 
 const todos = ref([])
 const currentTodo = ref({

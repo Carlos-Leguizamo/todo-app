@@ -41,7 +41,9 @@
           />
         </div>
         <div class="mb-4">
-          <label for="confirm-password" class="block text-gray-700 mb-1">Confirmar contraseña</label>
+          <label for="confirm-password" class="block text-gray-700 mb-1"
+            >Confirmar contraseña</label
+          >
           <input
             id="confirm-password"
             type="password"
@@ -73,9 +75,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import Loading from '@/components/Loading.vue';
-import Swal from 'sweetalert2';
+import { mapState } from 'vuex'
+import Loading from '@/components/Loading.vue'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'RegisterView',
@@ -88,8 +90,8 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
-      isLoading: false // Estado de carga
-    };
+      isLoading: false
+    }
   },
   computed: {
     ...mapState(['errorMessage']) // Mapea el estado del error desde Vuex
@@ -106,10 +108,11 @@ export default {
             popup: 'bg-white rounded-lg shadow-lg p-4 max-w-xs',
             title: 'text-xl font-bold text-gray-800',
             content: 'text-sm text-gray-600',
-            confirmButton: 'bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition duration-200'
+            confirmButton:
+              'bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition duration-200'
           }
-        });
-        return;
+        })
+        return
       }
 
       // Validación de longitud de contraseña
@@ -122,10 +125,11 @@ export default {
             popup: 'bg-white rounded-lg shadow-lg p-4 max-w-xs',
             title: 'text-xl font-bold text-gray-800',
             content: 'text-sm text-gray-600',
-            confirmButton: 'bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition duration-200'
+            confirmButton:
+              'bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition duration-200'
           }
-        });
-        return;
+        })
+        return
       }
 
       const userData = {
@@ -133,30 +137,30 @@ export default {
         email: this.email,
         password: this.password,
         password_confirmation: this.confirmPassword
-      };
+      }
 
-      this.isLoading = true; // Inicia el estado de carga
+      this.isLoading = true // Inicia el estado de carga
 
       try {
         // Llama a la acción de registro en Vuex
-        await this.$store.dispatch('register', userData);
+        await this.$store.dispatch('register', userData)
 
         // Espera un momento para mostrar el componente de carga
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Esperar 1.5 segundos (ajusta según lo que necesites)
+        await new Promise((resolve) => setTimeout(resolve, 1500)) 
 
         // Redirige o maneja el estado después del registro
         if (!this.errorMessage) {
-          this.$router.push('notes'); // Cambia 'Home' a 'notes'
+          this.$router.push('/') 
         }
       } catch (error) {
-        console.error("Error during registration:", error);
-        // Aquí puedes manejar otros posibles errores
+        console.error('Error during registration:', error)
+      
       } finally {
-        this.isLoading = false; // Finaliza el estado de carga
+        this.isLoading = false
       }
     }
   }
-};
+}
 </script>
 
 <style scoped>
