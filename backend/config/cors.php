@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['https://todo-app-109t.onrender.com/'],
 
     'allowed_origins_patterns' => [],
 
