@@ -54,8 +54,9 @@ class NoteController extends Controller
             'due_date' => 'nullable|date_format:Y-m-d',
             'tags' => 'nullable|array',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'user_id' => 'required|string',
+            'user_id' => 'required|integer', // Cambiado a integer
         ]);
+
 
         try {
             // Crear la nota
