@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
     // Registro de usuario
+
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -23,16 +26,28 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 400);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        DB::beginTransaction();
 
-        $token = $user->createToken('AuthToken')->accessToken;
+        try {
+            // Crear usuario
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        return response()->json(['token' => $token], 201);
+            $token = $user->createToken('AuthToken')->accessToken;
+
+            DB::commit();
+
+            return response()->json(['token' => $token], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Retorna un error genérico
+            return response()->json(['error' => 'Error en el servidor'], 500);
+        }
     }
+
 
     // Login de usuario
     public function login(Request $request)
