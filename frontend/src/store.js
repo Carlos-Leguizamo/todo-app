@@ -45,6 +45,7 @@ const store = createStore({
 
     async checkAuthentication({ commit }) {
       const token = localStorage.getItem('token')
+      console.log('token', token)
 
       // Si no hay token almacenado, no se realiza la validación
       if (!token) {
@@ -59,6 +60,7 @@ const store = createStore({
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         )
+        console.log('response', response)
 
         // Verificar si el token es válido según la respuesta del servidor
         if (response.data.valid) {
