@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/LoginView.vue'
 import Register from '../views/Register.vue'
@@ -21,7 +20,7 @@ const routes = [
     path: '/notes',
     name: 'Notes',
     component: () => import('../views/NotesView.vue'),
-    meta: { requiresAuth: true } 
+    meta: { requiresAuth: true } // Solo autenticados pueden acceder
   }
 ]
 
@@ -32,28 +31,29 @@ const router = createRouter({
 
 // Middleware para proteger las rutas
 router.beforeEach(async (to, from, next) => {
-  
+  // 1. Si ya se ha chequeado la autenticación en Vuex
   if (!store.state.authChecked) {
-    await store.dispatch('checkAuthentication')
+    await store.dispatch('checkAuthentication') // Chequear autenticación desde Vuex
   }
 
-  const isAuthenticated = store.state.isAuthenticated // Obtén el estado de autenticación
+  // 2. Verificar autenticación desde localStorage (opcional)
+  const isAuthenticated = store.state.isAuthenticated || localStorage.getItem('authToken') // Ejemplo con token
 
-  // Lógica para manejar rutas según el estado de autenticación
+  // Si el usuario está autenticado
   if (isAuthenticated) {
-    // Si está autenticado, protege las rutas de Home y Register
+    // Evitar que los usuarios autenticados accedan a Home o Register
     if (to.name === 'Home' || to.name === 'Register') {
-      next({ name: 'Notes' }) // Redirige a Notes si intenta acceder a Home o Register
-    } else {
-      next() // Permite la navegación
+      return next({ name: 'Notes' }) // Redirige a Notes si está autenticado
     }
+    // Permitir acceso a todas las demás rutas
+    next()
   } else {
-    // Si no está autenticado, protege la ruta de Notes
+    // Si no está autenticado, redirige a Home si la ruta requiere autenticación
     if (to.meta.requiresAuth) {
-      next({ name: 'Home' }) // Redirige a Home si intenta acceder a Notes
-    } else {
-      next() // Permite la navegación
+      return next({ name: 'Home' }) // Redirige a Home
     }
+    // Permitir acceso a rutas públicas
+    next()
   }
 })
 
