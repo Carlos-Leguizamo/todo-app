@@ -31,29 +31,22 @@ const router = createRouter({
 
 // Middleware para proteger las rutas
 router.beforeEach(async (to, from, next) => {
-  // 1. Si ya se ha chequeado la autenticación en Vuex
-  if (!store.state.authChecked) {
-    await store.dispatch('checkAuthentication') // Chequear autenticación desde Vuex
-  }
+  // Verificar si el usuario está autenticado desde Vuex o desde localStorage
+  const isAuthenticated = store.state.isAuthenticated || localStorage.getItem('authToken')
 
-  // 2. Verificar autenticación desde localStorage (opcional)
-  const isAuthenticated = store.state.isAuthenticated || localStorage.getItem('authToken') // Ejemplo con token
-
-  // Si el usuario está autenticado
+  // 1. Si está autenticado, permitir acceso a todas las rutas protegidas
   if (isAuthenticated) {
-    // Evitar que los usuarios autenticados accedan a Home o Register
+    // Si está autenticado y trata de acceder a Home o Register, redirigir a Notes
     if (to.name === 'Home' || to.name === 'Register') {
-      return next({ name: 'Notes' }) // Redirige a Notes si está autenticado
+      return next({ name: 'Notes' }) // Redirige a Notes si ya está autenticado
     }
-    // Permitir acceso a todas las demás rutas
-    next()
+    next() // Permite la navegación a las demás rutas
   } else {
-    // Si no está autenticado, redirige a Home si la ruta requiere autenticación
+    // 2. Si no está autenticado, redirigir a Home si la ruta requiere autenticación
     if (to.meta.requiresAuth) {
-      return next({ name: 'Home' }) // Redirige a Home
+      return next({ name: 'Home' }) // Redirige a Home si no está autenticado
     }
-    // Permitir acceso a rutas públicas
-    next()
+    next() // Permite acceso a rutas públicas (Home, Register)
   }
 })
 
