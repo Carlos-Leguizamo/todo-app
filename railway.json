@@ -1,4 +1,20 @@
 {
-    "root":"backend"
-
+  "services": {
+    "frontend": {
+      "build": {
+        "builder": "Nixpacks",
+        "nixpacks": {
+          "dir": "./frontend"
+        }
+      }
+    },
+    "backend": {
+      "build": {
+        "builder": "Nixpacks",
+        "nixpacks": {
+          "dir": "./backend"
+        }
+      }
+    }
+  }
 }
